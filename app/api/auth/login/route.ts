@@ -2,16 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/prisma/db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { cookies } from 'next/headers';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'sahil123';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, password } = await request.json();
+    const { email, password, user_type } = await request.json();
 
-    if (!email || !password) {
+    if (!email || !password || !user_type) {
       return NextResponse.json(
-        { error: 'Email and password are required' },
+        { error: 'Email, password, and user type are required' },
         { status: 400 }
       );
     }
@@ -23,6 +24,13 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: 'User not found' },
+        { status: 401 }
+      );
+    }
+
+    if (user.user_type !== user_type) {
+      return NextResponse.json(
+        { error: 'Unauthorized role selected' },
         { status: 401 }
       );
     }
@@ -47,6 +55,15 @@ export async function POST(request: NextRequest) {
     );
 
     const { password: _, ...userWithoutPassword } = user;
+
+    const cookieStore = await cookies();
+    cookieStore.set('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/',
+    });
 
     return NextResponse.json(
       {

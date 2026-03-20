@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Trash2 } from 'lucide-react'
+import { useData } from '@/context/DataContext'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,24 +15,35 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { useFormStatus } from 'react-dom'
 
 interface DeleteButtonProps {
     id: number
-    onDelete: (id: number) => Promise<{ message?: string | null }>
+    onDelete: (id: number) => Promise<{ message?: string | null; success?: boolean }>
 }
 
 export function DeleteButton({ id, onDelete }: DeleteButtonProps) {
     const [open, setOpen] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const { refreshData } = useData()
 
     const handleDelete = async () => {
         setLoading(true)
+        setError(null)
         try {
-            await onDelete(id)
+            const result = await onDelete(id)
+            
+            if (result.success === false) {
+                setError(result.message || 'Failed to delete')
+                return
+            }
+            
+            refreshData(true);
             setOpen(false)
-        } catch (error) {
-            console.error(error)
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Failed to delete'
+            setError(errorMessage)
+            console.error('Delete error:', err)
         } finally {
             setLoading(false)
         }
@@ -51,6 +63,11 @@ export function DeleteButton({ id, onDelete }: DeleteButtonProps) {
                         This action cannot be undone. This will permanently delete the record from our servers.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
+                {error && (
+                    <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md text-sm">
+                        {error}
+                    </div>
+                )}
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
                     <AlertDialogAction onClick={handleDelete} disabled={loading} className="bg-destructive hover:bg-destructive/90">

@@ -1,5 +1,9 @@
+'use client'
 
-import { getReceipts } from "@/lib/data"
+import { useEffect } from "react"
+import { useData } from "@/context/DataContext"
+import { useSort } from "@/hooks/use-sort"
+import { SortableHeader } from "@/components/sortable-header"
 import {
     Table,
     TableBody,
@@ -12,9 +16,30 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { CancelButton } from "@/components/cancel-button"
+import { cancelReceipt } from "@/lib/actions"
 
-export default async function ReceiptsPage() {
-    const receipts = await getReceipts()
+export default function ReceiptsPage() {
+    const { data, loading, refreshData } = useData()
+    const baseReceipts = data?.receipts || []
+
+    useEffect(() => {
+        refreshData(true)
+    }, [refreshData])
+
+    const { items: receipts, requestSort, sortConfig } = useSort(baseReceipts, { key: 'receipt_no', direction: 'desc' })
+
+    const handleCancelReceipt = async (id: number) => {
+        const result = await cancelReceipt(id)
+        if (result?.success) {
+            refreshData(true)
+        }
+        return result
+    }
+
+    if (loading && receipts.length === 0) {
+        return <div className="p-8 text-center text-muted-foreground">Loading receipts...</div>
+    }
 
     return (
         <div className="flex flex-col gap-4">
@@ -32,11 +57,12 @@ export default async function ReceiptsPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>Receipt No</TableHead>
-                                <TableHead>Date</TableHead>
-                                <TableHead>Patient</TableHead>
-                                <TableHead>Amount Paid</TableHead>
-                                <TableHead>Status</TableHead>
+                                <SortableHeader label="Receipt No" sortKey="receipt_no" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Date" sortKey="receipt_date" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Patient" sortKey="opd.patients.patient_name" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Amount Paid" sortKey="amount_paid" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Status" sortKey="cancellation_datetime" currentSort={sortConfig} onSort={requestSort} />
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -55,11 +81,18 @@ export default async function ReceiptsPage() {
                                             <Badge variant="destructive">Cancelled</Badge>
                                         )}
                                     </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-1">
+                                            {!receipt.cancellation_datetime && (
+                                                <CancelButton id={receipt.receipt_id} onCancel={handleCancelReceipt} />
+                                            )}
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             {receipts.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center">
+                                    <TableCell colSpan={6} className="text-center">
                                         No receipts found.
                                     </TableCell>
                                 </TableRow>

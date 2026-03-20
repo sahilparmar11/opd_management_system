@@ -10,7 +10,7 @@ export async function GET() {
         const formattedDoctors = doctors.map((doctor) => ({
             id: doctor.doctor_id,
             name: doctor.doctor_name,
-            description: doctor.description || '', // Handle null description
+            description: doctor.description || '',
         }));
 
         return NextResponse.json(formattedDoctors);

@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import {
     Activity,
@@ -10,6 +12,8 @@ import {
     TestTube,
     UserCog,
     Users,
+    LineChart,
+    HeartPulse,
 } from "lucide-react"
 import Link from "next/link"
 
@@ -24,6 +28,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarRail,
+    useSidebar,
 } from "@/components/ui/sidebar"
 
 const appItems = [
@@ -46,6 +51,11 @@ const appItems = [
         title: "Patients",
         url: "/dashboard/patients",
         icon: Users,
+    },
+    {
+        title: "Reports",
+        url: "/dashboard/reports",
+        icon: LineChart,
     },
 ]
 
@@ -83,19 +93,59 @@ const masterItems = [
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const [userType, setUserType] = React.useState<string | null>(null)
+    const [isMounted, setIsMounted] = React.useState(false)
+    const { setOpenMobile } = useSidebar()
+
+    React.useEffect(() => {
+        setIsMounted(true)
+        const userStr = localStorage.getItem('user')
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr)
+                if (user && user.user_type) {
+                    setUserType(user.user_type)
+                }
+            } catch (error) {
+                console.error("Failed to parse user from local storage", error)
+            }
+        }
+    }, [])
+
+    const filteredAppItems = React.useMemo(() => {
+        if (!userType) return appItems // Default if not yet loaded or unknown
+
+        if (userType === 'Administrator') return appItems
+
+        return appItems.filter(item => {
+            if (userType === 'Front Desk') {
+                return ['Dashboard', 'OPD', 'Patients', 'Receipts'].includes(item.title)
+            }
+            if (userType === 'Doctor') {
+                return ['Dashboard', 'OPD', 'Patients'].includes(item.title)
+            }
+            if (userType === 'Billing Operator') {
+                return ['Dashboard', 'Receipts'].includes(item.title)
+            }
+            return false
+        })
+    }, [userType])
+
+    // Only administrators can see the master items
+    const showMasterItems = userType === 'Administrator'
+
     return (
         <Sidebar {...props}>
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href="/dashboard">
-                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                                    <ClipboardList className="size-4" />
+                            <Link href="/dashboard" onClick={() => setOpenMobile(false)}>
+                                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-sm">
+                                    <HeartPulse className="size-4" />
                                 </div>
-                                <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">OPD Manager</span>
-                                    <span className="">v1.0.0</span>
+                                <div className="flex flex-col gap-0.5 leading-none px-1">
+                                    <span className="font-semibold text-primary text-base tracking-tight">OutCare</span>
                                 </div>
                             </Link>
                         </SidebarMenuButton>
@@ -107,10 +157,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                     <SidebarGroupLabel>Application</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {appItems.map((item) => (
+                            {isMounted ? filteredAppItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
                                     <SidebarMenuButton asChild>
-                                        <Link href={item.url}>
+                                        <Link href={item.url} onClick={() => setOpenMobile(false)}>
+                                            <item.icon />
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )) : appItems.map((item) => (
+                                <SidebarMenuItem key={item.title}>
+                                    <SidebarMenuButton asChild>
+                                        <Link href={item.url} onClick={() => setOpenMobile(false)}>
                                             <item.icon />
                                             <span>{item.title}</span>
                                         </Link>
@@ -120,23 +179,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
-                <SidebarGroup>
-                    <SidebarGroupLabel>Master Data</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {masterItems.map((item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <Link href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                
+                {(!isMounted || showMasterItems) && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Master Data</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {masterItems.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild>
+                                            <Link href={item.url} onClick={() => setOpenMobile(false)}>
+                                                <item.icon />
+                                                <span>{item.title}</span>
+                                            </Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
             <SidebarRail />
         </Sidebar>

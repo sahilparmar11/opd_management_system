@@ -18,7 +18,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         notFound()
     }
 
-    // Serialize Decimal fields
     const serializedHospital = {
         ...hospital,
         registration_charge: hospital.registration_charge ? hospital.registration_charge.toNumber() : null

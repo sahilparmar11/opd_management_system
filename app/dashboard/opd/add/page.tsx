@@ -6,14 +6,6 @@ export default async function Page() {
     const patients = await getPatients()
     const doctors = await getDoctors()
 
-    const serializedDoctors = doctors.map(doctor => ({
-        ...doctor,
-        hospitals: {
-            ...doctor.hospitals,
-            registration_charge: doctor.hospitals.registration_charge ? doctor.hospitals.registration_charge.toNumber() : null
-        }
-    }))
-
     return (
         <div className="w-full max-w-2xl mx-auto">
             <Card>
@@ -21,8 +13,7 @@ export default async function Page() {
                     <CardTitle>New OPD Entry</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <CreateOPDForm patients={patients} doctors={serializedDoctors} />
-                    {/* <CreateOPDForm patients={patients} doctors={doctors} /> */}
+                    <CreateOPDForm patients={patients} doctors={doctors} />
                 </CardContent>
             </Card>
         </div>

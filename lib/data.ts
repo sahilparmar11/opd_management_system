@@ -74,9 +74,15 @@ export async function getRecentTransactions() {
 }
 
 export async function getHospitals() {
-    return await prisma.hospitals.findMany({
+    const hospitals = await prisma.hospitals.findMany({
         orderBy: { hospital_id: 'asc' }
     })
+    
+    // Convert Decimal fields to numbers for Client Component compatibility
+    return hospitals.map(hospital => ({
+        ...hospital,
+        registration_charge: hospital.registration_charge ? hospital.registration_charge.toNumber() : null
+    }))
 }
 
 export async function getDiagnosisTypes() {
@@ -92,12 +98,17 @@ export async function getTreatmentTypes() {
 }
 
 export async function getSubTreatmentTypes() {
-    return await prisma.sub_treatment_types.findMany({
+    const types = await prisma.sub_treatment_types.findMany({
         include: {
             treatment_types: true // to show parent treatment type name
         },
         orderBy: { sub_treatment_type_id: 'asc' }
     })
+
+    return types.map(t => ({
+        ...t,
+        rate: t.rate ? t.rate.toNumber() : 0
+    }))
 }
 
 export async function getUsers() {
@@ -107,12 +118,20 @@ export async function getUsers() {
 }
 
 export async function getDoctors() {
-    return await prisma.doctors.findMany({
+    const doctors = await prisma.doctors.findMany({
         include: {
             hospitals: true // to show hospital name
         },
         orderBy: { doctor_id: 'asc' }
     })
+
+    return doctors.map(doctor => ({
+        ...doctor,
+        hospitals: doctor.hospitals ? {
+            ...doctor.hospitals,
+            registration_charge: doctor.hospitals.registration_charge ? doctor.hospitals.registration_charge.toNumber() : null
+        } : null
+    }))
 }
 
 export async function getPatients() {

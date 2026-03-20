@@ -13,15 +13,15 @@ export default function CreateHospitalForm() {
 
     return (
         <form action={formAction}>
-            <div className="rounded-md bg-gray-50 p-4 md:p-6 space-y-4">
+            <div className="rounded-md bg-secondary/50 p-4 md:p-6 space-y-4">
 
                 {/* Hospital Name */}
                 <div>
                     <Label htmlFor="name" className="mb-2 block text-sm font-medium">Hospital Name</Label>
-                    <Input id="name" name="name" placeholder="Enter hospital name" className="w-full" aria-describedby="name-error" />
+                    <Input id="name" name="name" placeholder="Enter hospital name" className="w-full" aria-describedby="name-error" required />
                     <div id="name-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.name && state.errors.name.map((error: string) => (
-                            <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                            <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                         ))}
                     </div>
                 </div>
@@ -36,13 +36,13 @@ export default function CreateHospitalForm() {
                     {/* Registration Charge */}
                     <div>
                         <Label htmlFor="regCharge" className="mb-2 block text-sm font-medium">Registration Charge</Label>
-                        <Input id="regCharge" name="regCharge" type="number" step="0.01" placeholder="0.00" className="w-full" />
+                        <Input id="regCharge" name="regCharge" type="number" step="0.01" min="0" placeholder="0.00" className="w-full" />
                     </div>
 
                     {/* Validity Months */}
                     <div>
                         <Label htmlFor="validityMonths" className="mb-2 block text-sm font-medium">Validity (Months)</Label>
-                        <Input id="validityMonths" name="validityMonths" type="number" placeholder="12" className="w-full" />
+                        <Input id="validityMonths" name="validityMonths" type="number" min="1" placeholder="12" className="w-full" />
                     </div>
                 </div>
 
@@ -50,10 +50,10 @@ export default function CreateHospitalForm() {
                     {/* Opening Date */}
                     <div>
                         <Label htmlFor="openingDate" className="mb-2 block text-sm font-medium">Opening Date</Label>
-                        <Input id="openingDate" name="openingDate" type="date" className="w-full" aria-describedby="openingDate-error" />
+                        <Input id="openingDate" name="openingDate" type="date" className="w-full" aria-describedby="openingDate-error" required />
                         <div id="openingDate-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingDate && state.errors.openingDate.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -61,10 +61,10 @@ export default function CreateHospitalForm() {
                     {/* Opening Patient No */}
                     <div>
                         <Label htmlFor="openingPatientNo" className="mb-2 block text-sm font-medium">Opening Patient No</Label>
-                        <Input id="openingPatientNo" name="openingPatientNo" type="number" placeholder="1" className="w-full" aria-describedby="openingPatientNo-error" />
+                        <Input id="openingPatientNo" name="openingPatientNo" type="number" min="1" placeholder="1" className="w-full" aria-describedby="openingPatientNo-error" required />
                         <div id="openingPatientNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingPatientNo && state.errors.openingPatientNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -74,10 +74,10 @@ export default function CreateHospitalForm() {
                     {/* Opening OPD No */}
                     <div>
                         <Label htmlFor="openingOpdNo" className="mb-2 block text-sm font-medium">Opening OPD No</Label>
-                        <Input id="openingOpdNo" name="openingOpdNo" type="number" placeholder="1" className="w-full" aria-describedby="openingOpdNo-error" />
+                        <Input id="openingOpdNo" name="openingOpdNo" type="number" min="1" placeholder="1" className="w-full" aria-describedby="openingOpdNo-error" required />
                         <div id="openingOpdNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingOpdNo && state.errors.openingOpdNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -85,10 +85,10 @@ export default function CreateHospitalForm() {
                     {/* Opening Receipt No */}
                     <div>
                         <Label htmlFor="openingReceiptNo" className="mb-2 block text-sm font-medium">Opening Receipt No</Label>
-                        <Input id="openingReceiptNo" name="openingReceiptNo" type="number" placeholder="1" className="w-full" aria-describedby="openingReceiptNo-error" />
+                        <Input id="openingReceiptNo" name="openingReceiptNo" type="number" min="1" placeholder="1" className="w-full" aria-describedby="openingReceiptNo-error" required />
                         <div id="openingReceiptNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingReceiptNo && state.errors.openingReceiptNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -102,7 +102,7 @@ export default function CreateHospitalForm() {
 
                 <div id="form-error" aria-live="polite" aria-atomic="true">
                     {state.message && (
-                        <p className="mt-2 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-amber-500">
                             {state.message}
                         </p>
                     )}
@@ -111,7 +111,7 @@ export default function CreateHospitalForm() {
             <div className="mt-6 flex justify-end gap-4">
                 <Link
                     href="/dashboard/hospitals"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                    className="flex h-10 items-center rounded-lg bg-secondary/50 px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/50"
                 >
                     Cancel
                 </Link>

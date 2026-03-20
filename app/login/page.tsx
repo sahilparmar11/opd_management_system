@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, HeartPulse } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -61,17 +61,20 @@ const Login = () => {
 
   return (
     <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md rounded-2xl border bg-muted/40 p-8 shadow-sm">
+      <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-sm">
 
-        <div className="mb-6 text-center">
-          <h2 className="text-2xl font-bold">Sign In</h2>
-          <p className="text-sm text-muted-foreground">
-            Access your workspace
+        <div className="mb-8 flex flex-col items-center text-center">
+          <div className="mb-4 flex aspect-square size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <HeartPulse className="size-6" />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">OutCare</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Access your medical workspace
           </p>
         </div>
 
         {error && (
-          <p className="mb-4 text-sm text-red-500">{error}</p>
+          <p className="mb-4 text-sm text-amber-500">{error}</p>
         )}
 
         <div className="space-y-2">
@@ -79,12 +82,14 @@ const Login = () => {
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
+              type="email"
               placeholder="Enter your email"
               className="pl-10"
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
+              required
             />
           </div>
         </div>
@@ -102,6 +107,7 @@ const Login = () => {
               onChange={(e) =>
                 setFormData({ ...formData, password: e.target.value })
               }
+              required
             />
 
             <button

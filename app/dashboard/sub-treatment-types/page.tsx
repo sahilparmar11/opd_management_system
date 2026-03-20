@@ -1,5 +1,9 @@
+'use client'
 
-import { getSubTreatmentTypes } from "@/lib/data"
+import { useEffect } from "react"
+import { useData } from "@/context/DataContext"
+import { useSort } from "@/hooks/use-sort"
+import { SortableHeader } from "@/components/sortable-header"
 import {
     Table,
     TableBody,
@@ -12,9 +16,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { Pencil } from "lucide-react"
+import { DeleteButton } from "@/components/delete-button"
+import { deleteSubTreatmentType } from "@/lib/actions"
 
-export default async function SubTreatmentTypesPage() {
-    const subTreatmentTypes = await getSubTreatmentTypes()
+export default function SubTreatmentTypesPage() {
+    const { data, loading, refreshData } = useData()
+    const baseSubTreatmentTypes = data?.subTreatmentTypes || []
+
+    useEffect(() => {
+        refreshData(true)
+    }, [refreshData])
+
+    const { items: subTreatmentTypes, requestSort, sortConfig } = useSort(baseSubTreatmentTypes, { key: 'sub_treatment_type_id', direction: 'asc' })
+
+    if (loading && subTreatmentTypes.length === 0) {
+        return <div className="p-8 text-center text-muted-foreground">Loading sub treatment types...</div>
+    }
 
     return (
         <div className="flex flex-col gap-4">
@@ -32,11 +50,12 @@ export default async function SubTreatmentTypesPage() {
                     <Table>
                         <TableHeader>
                             <TableRow>
-                                <TableHead>ID</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Treatment Type</TableHead>
-                                <TableHead>Rate</TableHead>
-                                <TableHead>Status</TableHead>
+                                <SortableHeader label="ID" sortKey="sub_treatment_type_id" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Name" sortKey="sub_treatment_type_name" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Treatment Type" sortKey="treatment_types.treatment_type_name" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Rate" sortKey="rate" currentSort={sortConfig} onSort={requestSort} />
+                                <SortableHeader label="Status" sortKey="is_active" currentSort={sortConfig} onSort={requestSort} />
+                                <TableHead className="text-right">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -55,11 +74,21 @@ export default async function SubTreatmentTypesPage() {
                                             <Badge variant="destructive">Inactive</Badge>
                                         )}
                                     </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex items-center justify-end gap-1">
+                                            <Link href={`/dashboard/sub-treatment-types/${stt.sub_treatment_type_id}/edit`}>
+                                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
+                                            </Link>
+                                            <DeleteButton id={stt.sub_treatment_type_id} onDelete={deleteSubTreatmentType} />
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             {subTreatmentTypes.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={5} className="text-center">
+                                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                                         No sub treatment types found.
                                     </TableCell>
                                 </TableRow>

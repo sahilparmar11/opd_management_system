@@ -13,7 +13,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
 
     return (
         <form action={formAction}>
-            <div className="rounded-md bg-gray-50 p-4 md:p-6 space-y-4">
+            <div className="rounded-md bg-secondary/50 p-4 md:p-6 space-y-4">
 
                 {/* Hospital */}
                 <div>
@@ -22,9 +22,10 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                         <select
                             id="hospital"
                             name="hospitalId"
-                            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                            className="peer block w-full cursor-pointer rounded-md border border-input bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring py-2 pl-2 text-sm outline-2 placeholder:text-muted-foreground"
                             defaultValue=""
                             aria-describedby="hospital-error"
+                            required
                         >
                             <option value="" disabled>Select a hospital</option>
                             {hospitals.map((hospital) => (
@@ -36,7 +37,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                     </div>
                     <div id="hospital-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.hospitalId && state.errors.hospitalId.map((error: string) => (
-                            <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                            <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                         ))}
                     </div>
                 </div>
@@ -44,10 +45,10 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                 {/* Patient Name */}
                 <div>
                     <Label htmlFor="patientName" className="mb-2 block text-sm font-medium">Patient Name</Label>
-                    <Input id="patientName" name="patientName" placeholder="Enter patient name" className="w-full" aria-describedby="patientName-error" />
+                    <Input id="patientName" name="patientName" placeholder="Enter patient name" className="w-full" aria-describedby="patientName-error" required />
                     <div id="patientName-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.patientName && state.errors.patientName.map((error: string) => (
-                            <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                            <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                         ))}
                     </div>
                 </div>
@@ -56,10 +57,10 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                     {/* Mobile No */}
                     <div>
                         <Label htmlFor="mobileNo" className="mb-2 block text-sm font-medium">Mobile No</Label>
-                        <Input id="mobileNo" name="mobileNo" placeholder="Enter mobile no" className="w-full" aria-describedby="mobileNo-error" />
+                        <Input id="mobileNo" name="mobileNo" type="tel" pattern="\d{10}" title="Must be exactly 10 digits" minLength={10} maxLength={10} placeholder="Enter mobile no" className="w-full" aria-describedby="mobileNo-error" required />
                         <div id="mobileNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.mobileNo && state.errors.mobileNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -75,7 +76,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                     {/* Age */}
                     <div>
                         <Label htmlFor="age" className="mb-2 block text-sm font-medium">Age</Label>
-                        <Input id="age" name="age" type="number" placeholder="Age" className="w-full" />
+                        <Input id="age" name="age" type="number" min="0" max="150" placeholder="Age" className="w-full" />
                     </div>
 
                     {/* Gender */}
@@ -84,9 +85,10 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                         <select
                             id="gender"
                             name="gender"
-                            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                            className="peer block w-full cursor-pointer rounded-md border border-input bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring py-2 pl-2 text-sm outline-2 placeholder:text-muted-foreground"
                             defaultValue=""
                             aria-describedby="gender-error"
+                            required
                         >
                             <option value="" disabled>Select Gender</option>
                             <option value="Male">Male</option>
@@ -95,7 +97,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                         </select>
                         <div id="gender-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.gender && state.errors.gender.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -106,7 +108,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
                         <select
                             id="bloodGroup"
                             name="bloodGroup"
-                            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                            className="peer block w-full cursor-pointer rounded-md border border-input bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring py-2 pl-2 text-sm outline-2 placeholder:text-muted-foreground"
                             defaultValue=""
                         >
                             <option value="">Select (Optional)</option>
@@ -150,7 +152,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
 
                 <div id="form-error" aria-live="polite" aria-atomic="true">
                     {state.message && (
-                        <p className="mt-2 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-amber-500">
                             {state.message}
                         </p>
                     )}
@@ -159,7 +161,7 @@ export default function CreatePatientForm({ hospitals }: { hospitals: any[] }) {
             <div className="mt-6 flex justify-end gap-4">
                 <Link
                     href="/dashboard/patients"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                    className="flex h-10 items-center rounded-lg bg-secondary/50 px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/50"
                 >
                     Cancel
                 </Link>

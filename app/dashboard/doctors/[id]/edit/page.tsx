@@ -18,11 +18,6 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
         getHospitals()
     ])
 
-    const serializedHospitals = hospitals.map(hospital => ({
-        ...hospital,
-        registration_charge: hospital.registration_charge ? hospital.registration_charge.toNumber() : null
-    }))
-
     if (!doctor) {
         notFound()
     }
@@ -34,7 +29,7 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
                     <CardTitle>Edit Doctor</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <EditDoctorForm doctor={doctor} hospitals={serializedHospitals} />
+                    <EditDoctorForm doctor={doctor} hospitals={hospitals} />
                 </CardContent>
             </Card>
         </div>

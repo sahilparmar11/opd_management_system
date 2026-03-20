@@ -20,7 +20,7 @@ export default function EditTreatmentTypeForm({
 
     return (
         <form action={formAction}>
-            <div className="rounded-md bg-gray-50 p-4 md:p-6">
+            <div className="rounded-md bg-secondary/50 p-4 md:p-6">
                 {/* Hospital */}
                 <div className="mb-4">
                     <Label htmlFor="hospital" className="mb-2 block text-sm font-medium">
@@ -30,9 +30,10 @@ export default function EditTreatmentTypeForm({
                         <select
                             id="hospital"
                             name="hospitalId"
-                            className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-2 text-sm outline-2 placeholder:text-gray-500"
+                            className="peer block w-full cursor-pointer rounded-md border border-input bg-background text-foreground focus:border-ring focus:ring-1 focus:ring-ring py-2 pl-2 text-sm outline-2 placeholder:text-muted-foreground"
                             defaultValue={treatmentType.hospital_id}
                             aria-describedby="hospital-error"
+                            required
                         >
                             <option value="" disabled>
                                 Select a hospital
@@ -47,7 +48,7 @@ export default function EditTreatmentTypeForm({
                     <div id="hospital-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.hospitalId &&
                             state.errors.hospitalId.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">
+                                <p key={error} className="mt-2 text-sm text-amber-500">
                                     {error}
                                 </p>
                             ))}
@@ -66,11 +67,12 @@ export default function EditTreatmentTypeForm({
                         placeholder="Enter treatment name"
                         className="w-full"
                         aria-describedby="name-error"
+                        required
                     />
                     <div id="name-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.name &&
                             state.errors.name.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">
+                                <p key={error} className="mt-2 text-sm text-amber-500">
                                     {error}
                                 </p>
                             ))}
@@ -107,7 +109,7 @@ export default function EditTreatmentTypeForm({
 
                 <div id="form-error" aria-live="polite" aria-atomic="true">
                     {state.message && (
-                        <p className="mt-2 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-amber-500">
                             {state.message}
                         </p>
                     )}
@@ -116,7 +118,7 @@ export default function EditTreatmentTypeForm({
             <div className="mt-6 flex justify-end gap-4">
                 <Link
                     href="/dashboard/treatment-types"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                    className="flex h-10 items-center rounded-lg bg-secondary/50 px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/50"
                 >
                     Cancel
                 </Link>

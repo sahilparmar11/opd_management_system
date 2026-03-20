@@ -63,7 +63,7 @@ const Signup = () => {
           </p>
         </div>
 
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && <p className="text-amber-500 text-sm mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit}>
           {/* Name */}

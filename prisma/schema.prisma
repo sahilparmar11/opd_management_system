@@ -26,12 +26,15 @@ model diagnosis_types {
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model doctors {
   doctor_id   Int       @id
-  doctor_name String    @db.VarChar(250)
-  staff_id    Int?
-  student_id  Int?
-  hospital_id Int
-  description String?   @db.VarChar(250)
-  user_id     Int
+  doctor_name    String    @db.VarChar(250)
+  staff_id       Int?
+  student_id     Int?
+  hospital_id    Int
+  mobile_no      String?   @db.VarChar(20)
+  email          String?   @db.VarChar(250)
+  specialization String?   @db.VarChar(250)
+  description    String?   @db.VarChar(250)
+  user_id        Int
   created     DateTime  @db.Timestamp(6)
   modified    DateTime  @db.Timestamp(6)
   hospitals   hospitals @relation(fields: [hospital_id], references: [hospital_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_hospital")
@@ -77,7 +80,7 @@ model opd {
   modified             DateTime              @db.Timestamp(6)
   old_opd_no           String?               @db.VarChar(250)
   doctors              doctors               @relation(fields: [treated_by_doctor_id], references: [doctor_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_opd_doctor")
-  patients             patients              @relation(fields: [patient_id], references: [patient_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_opd_patient")
+  patients             patients              @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_opd_patient")
   opd_diagnosis_types  opd_diagnosis_types[]
   receipts             receipts[]
 }
@@ -92,7 +95,7 @@ model opd_diagnosis_types {
   created               DateTime        @db.Timestamp(6)
   modified              DateTime        @db.Timestamp(6)
   diagnosis_types       diagnosis_types @relation(fields: [diagnosis_type_id], references: [diagnosis_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_opd_diag_diag")
-  opd                   opd             @relation(fields: [opd_id], references: [opd_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_opd_diag_opd")
+  opd                   opd             @relation(fields: [opd_id], references: [opd_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_opd_diag_opd")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -133,8 +136,8 @@ model receipt_tran {
   user_id               Int
   created               DateTime            @db.Timestamp(6)
   modified              DateTime            @db.Timestamp(6)
-  receipts              receipts            @relation(fields: [receipt_id], references: [receipt_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_tran_receipt")
   sub_treatment_types   sub_treatment_types @relation(fields: [sub_treatment_type_id], references: [sub_treatment_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_tran_sub_treatment")
+  receipts              receipts            @relation(fields: [receipt_id], references: [receipt_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_receipt_tran_receipt")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
@@ -155,7 +158,7 @@ model receipts {
   cancellation_by_user_id Int?
   cancellation_remarks    String?        @db.VarChar(500)
   receipt_tran            receipt_tran[]
-  opd                     opd            @relation(fields: [opd_id], references: [opd_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_opd")
+  opd                     opd            @relation(fields: [opd_id], references: [opd_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_receipt_opd")
 }
 
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.

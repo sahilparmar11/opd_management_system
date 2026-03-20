@@ -14,7 +14,7 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
 
     return (
         <form action={formAction}>
-            <div className="rounded-md bg-gray-50 p-4 md:p-6 space-y-4">
+            <div className="rounded-md bg-secondary/50 p-4 md:p-6 space-y-4">
 
                 {/* Hospital Name */}
                 <div>
@@ -26,10 +26,11 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                         placeholder="Enter hospital name"
                         className="w-full"
                         aria-describedby="name-error"
+                        required
                     />
                     <div id="name-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.name && state.errors.name.map((error: string) => (
-                            <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                            <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                         ))}
                     </div>
                 </div>
@@ -55,6 +56,7 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                             name="regCharge"
                             type="number"
                             step="0.01"
+                            min="0"
                             defaultValue={hospital.registration_charge ? Number(hospital.registration_charge) : ''}
                             placeholder="0.00"
                             className="w-full"
@@ -68,6 +70,7 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                             id="validityMonths"
                             name="validityMonths"
                             type="number"
+                            min="1"
                             defaultValue={hospital.registration_validity_months || ''}
                             placeholder="12"
                             className="w-full"
@@ -86,10 +89,11 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                             defaultValue={hospital.opening_date ? new Date(hospital.opening_date).toISOString().split('T')[0] : ''}
                             className="w-full"
                             aria-describedby="openingDate-error"
+                            required
                         />
                         <div id="openingDate-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingDate && state.errors.openingDate.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -101,14 +105,16 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                             id="openingPatientNo"
                             name="openingPatientNo"
                             type="number"
+                            min="1"
                             defaultValue={hospital.opening_patient_no}
                             placeholder="1"
                             className="w-full"
                             aria-describedby="openingPatientNo-error"
+                            required
                         />
                         <div id="openingPatientNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingPatientNo && state.errors.openingPatientNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -122,14 +128,16 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                             id="openingOpdNo"
                             name="openingOpdNo"
                             type="number"
+                            min="1"
                             defaultValue={hospital.opening_opd_no}
                             placeholder="1"
                             className="w-full"
                             aria-describedby="openingOpdNo-error"
+                            required
                         />
                         <div id="openingOpdNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingOpdNo && state.errors.openingOpdNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -141,14 +149,16 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
                             id="openingReceiptNo"
                             name="openingReceiptNo"
                             type="number"
+                            min="1"
                             defaultValue={hospital.opening_receipt_no}
                             placeholder="1"
                             className="w-full"
                             aria-describedby="openingReceiptNo-error"
+                            required
                         />
                         <div id="openingReceiptNo-error" aria-live="polite" aria-atomic="true">
                             {state.errors?.openingReceiptNo && state.errors.openingReceiptNo.map((error: string) => (
-                                <p key={error} className="mt-2 text-sm text-red-500">{error}</p>
+                                <p key={error} className="mt-2 text-sm text-amber-500">{error}</p>
                             ))}
                         </div>
                     </div>
@@ -168,7 +178,7 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
 
                 <div id="form-error" aria-live="polite" aria-atomic="true">
                     {state.message && (
-                        <p className="mt-2 text-sm text-red-500">
+                        <p className="mt-2 text-sm text-amber-500">
                             {state.message}
                         </p>
                     )}
@@ -177,7 +187,7 @@ export default function EditHospitalForm({ hospital }: { hospital: any }) {
             <div className="mt-6 flex justify-end gap-4">
                 <Link
                     href="/dashboard/hospitals"
-                    className="flex h-10 items-center rounded-lg bg-gray-100 px-4 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                    className="flex h-10 items-center rounded-lg bg-secondary/50 px-4 text-sm font-medium text-secondary-foreground transition-colors hover:bg-secondary/50"
                 >
                     Cancel
                 </Link>

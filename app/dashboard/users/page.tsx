@@ -1,5 +1,9 @@
+'use client'
 
-import { getUsers } from "@/lib/data"
+import { useEffect } from "react"
+import { useData } from "@/context/DataContext"
+import { useSort } from "@/hooks/use-sort"
+import { SortableHeader } from "@/components/sortable-header"
 import {
     Table,
     TableBody,
@@ -11,8 +15,19 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 
-export default async function UsersPage() {
-    const users = await getUsers()
+export default function UsersPage() {
+    const { data, loading, refreshData } = useData()
+    const baseUsers = data?.users || []
+
+    useEffect(() => {
+        refreshData(true)
+    }, [refreshData])
+
+    const { items: users, requestSort, sortConfig } = useSort(baseUsers, { key: 'user_id', direction: 'asc' })
+
+    if (loading && users.length === 0) {
+        return <div className="p-8 text-center text-muted-foreground">Loading users...</div>
+    }
 
     return (
         <div className="flex flex-col gap-4">
@@ -24,11 +39,11 @@ export default async function UsersPage() {
                 <CardContent>
                     <Table>
                         <TableHeader>
-                            <TableRow>
-                                <TableHead>ID</TableHead>
-                                <TableHead>Name</TableHead>
-                                <TableHead>Email</TableHead>
-                                <TableHead>Type</TableHead>
+                            <TableRow className="border-b bg-muted/40 hover:bg-muted/40">
+                                <SortableHeader label="ID" sortKey="user_id" currentSort={sortConfig} onSort={requestSort} className="font-semibold text-xs uppercase text-muted-foreground" />
+                                <SortableHeader label="Name" sortKey="first_name" currentSort={sortConfig} onSort={requestSort} className="font-semibold text-xs uppercase text-muted-foreground" />
+                                <SortableHeader label="Email" sortKey="email" currentSort={sortConfig} onSort={requestSort} className="font-semibold text-xs uppercase text-muted-foreground" />
+                                <SortableHeader label="Type" sortKey="user_type" currentSort={sortConfig} onSort={requestSort} className="font-semibold text-xs uppercase text-muted-foreground" />
                             </TableRow>
                         </TableHeader>
                         <TableBody>
