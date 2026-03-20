@@ -1,0 +1,204 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "../lib/generated/prisma"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model diagnosis_types {
+  diagnosis_type_id         Int                   @id
+  diagnosis_type_name       String                @db.VarChar(250)
+  diagnosis_type_short_name String?               @db.VarChar(50)
+  is_active                 Boolean
+  hospital_id               Int
+  description               String?               @db.VarChar(250)
+  user_id                   Int
+  created                   DateTime              @db.Timestamp(6)
+  modified                  DateTime              @db.Timestamp(6)
+  hospitals                 hospitals             @relation(fields: [hospital_id], references: [hospital_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_diagnosis_hospital")
+  opd_diagnosis_types       opd_diagnosis_types[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model doctors {
+  doctor_id      Int       @id
+  doctor_name    String    @db.VarChar(250)
+  staff_id       Int?
+  student_id     Int?
+  hospital_id    Int
+  mobile_no      String?   @db.VarChar(20)
+  email          String?   @db.VarChar(250)
+  specialization String?   @db.VarChar(250)
+  description    String?   @db.VarChar(250)
+  user_id        Int
+  created        DateTime  @db.Timestamp(6)
+  modified       DateTime  @db.Timestamp(6)
+  hospitals      hospitals @relation(fields: [hospital_id], references: [hospital_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_doctor_hospital")
+  opd            opd[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model hospitals {
+  hospital_id                       Int               @id
+  hospital_name                     String            @db.VarChar(250)
+  default_payment_mode_id           Int?
+  registration_charge               Decimal?          @db.Decimal(10, 2)
+  registration_validity_months      Int?
+  opening_date                      DateTime          @db.Date
+  opening_patient_no                Int
+  opening_opd_no                    Int
+  opening_receipt_no                Int
+  description                       String?           @db.VarChar(250)
+  user_id                           Int
+  created                           DateTime          @db.Timestamp(6)
+  modified                          DateTime          @db.Timestamp(6)
+  address                           String?           @db.VarChar(500)
+  is_rate_enable_in_receipt         Boolean?
+  is_registration_fee_enable_in_opd Boolean?
+  diagnosis_types                   diagnosis_types[]
+  doctors                           doctors[]
+  patients                          patients[]
+  treatment_types                   treatment_types[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model opd {
+  opd_id               Int                   @id
+  opd_no               String?               @db.VarChar(250)
+  opd_datetime         DateTime              @db.Timestamp(6)
+  patient_id           Int
+  is_follow_up_case    Boolean
+  treated_by_doctor_id Int
+  registration_fee     Decimal               @db.Decimal(10, 2)
+  description          String?               @db.VarChar(250)
+  user_id              Int
+  created              DateTime              @db.Timestamp(6)
+  modified             DateTime              @db.Timestamp(6)
+  old_opd_no           String?               @db.VarChar(250)
+  doctors              doctors               @relation(fields: [treated_by_doctor_id], references: [doctor_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_opd_doctor")
+  patients             patients              @relation(fields: [patient_id], references: [patient_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_opd_patient")
+  opd_diagnosis_types  opd_diagnosis_types[]
+  receipts             receipts[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model opd_diagnosis_types {
+  opd_diagnosis_type_id Int             @id
+  opd_id                Int
+  diagnosis_type_id     Int
+  description           String?         @db.VarChar(250)
+  user_id               Int
+  created               DateTime        @db.Timestamp(6)
+  modified              DateTime        @db.Timestamp(6)
+  diagnosis_types       diagnosis_types @relation(fields: [diagnosis_type_id], references: [diagnosis_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_opd_diag_diag")
+  opd                   opd             @relation(fields: [opd_id], references: [opd_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_opd_diag_opd")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model patients {
+  patient_id            Int       @id
+  patient_name          String    @db.VarChar(250)
+  patient_no            Int
+  registration_datetime DateTime  @db.Timestamp(6)
+  age                   Int?
+  blood_group           String?   @db.VarChar(20)
+  gender                String    @db.VarChar(10)
+  occupation            String?   @db.VarChar(100)
+  address               String?   @db.VarChar(250)
+  hospital_id           Int
+  state_id              Int?
+  city_id               Int?
+  pin_code              String?   @db.VarChar(10)
+  mobile_no             String    @db.VarChar(20)
+  referred_by           String?   @db.VarChar(250)
+  description           String?   @db.VarChar(250)
+  user_id               Int
+  created               DateTime  @db.Timestamp(6)
+  modified              DateTime  @db.Timestamp(6)
+  emergency_contact_no  String?   @db.VarChar(20)
+  opd                   opd[]
+  hospitals             hospitals @relation(fields: [hospital_id], references: [hospital_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_patient_hospital")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model receipt_tran {
+  receipt_tran_id       Int                 @id
+  receipt_id            Int
+  sub_treatment_type_id Int
+  quantity              Int
+  rate                  Decimal             @db.Decimal(10, 2)
+  amount                Decimal             @db.Decimal(10, 2)
+  description           String?             @db.VarChar(250)
+  user_id               Int
+  created               DateTime            @db.Timestamp(6)
+  modified              DateTime            @db.Timestamp(6)
+  sub_treatment_types   sub_treatment_types @relation(fields: [sub_treatment_type_id], references: [sub_treatment_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_receipt_tran_sub_treatment")
+  receipts              receipts            @relation(fields: [receipt_id], references: [receipt_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_receipt_tran_receipt")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model receipts {
+  receipt_id              Int            @id
+  receipt_no              String?        @db.VarChar(250)
+  receipt_date            DateTime       @db.Timestamp(6)
+  opd_id                  Int
+  amount_paid             Decimal        @db.Decimal(10, 2)
+  description             String?        @db.VarChar(250)
+  user_id                 Int
+  created                 DateTime       @db.Timestamp(6)
+  modified                DateTime       @db.Timestamp(6)
+  payment_mode_id         Int
+  reference_no            String?        @db.VarChar(250)
+  reference_date          DateTime?      @db.Timestamp(6)
+  cancellation_datetime   DateTime?      @db.Timestamp(6)
+  cancellation_by_user_id Int?
+  cancellation_remarks    String?        @db.VarChar(500)
+  receipt_tran            receipt_tran[]
+  opd                     opd            @relation(fields: [opd_id], references: [opd_id], onDelete: Cascade, onUpdate: NoAction, map: "fk_receipt_opd")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model sub_treatment_types {
+  sub_treatment_type_id   Int             @id
+  sub_treatment_type_name String          @db.VarChar(250)
+  treatment_type_id       Int
+  rate                    Decimal         @db.Decimal(10, 2)
+  is_active               Boolean
+  description             String?         @db.VarChar(250)
+  user_id                 Int
+  created                 DateTime        @db.Timestamp(6)
+  modified                DateTime        @db.Timestamp(6)
+  account_id              Int?
+  receipt_tran            receipt_tran[]
+  treatment_types         treatment_types @relation(fields: [treatment_type_id], references: [treatment_type_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_sub_treatment")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model treatment_types {
+  treatment_type_id         Int                   @id
+  treatment_type_name       String                @db.VarChar(250)
+  treatment_type_short_name String?               @db.VarChar(50)
+  hospital_id               Int
+  description               String?               @db.VarChar(250)
+  user_id                   Int
+  created                   DateTime              @db.Timestamp(6)
+  modified                  DateTime              @db.Timestamp(6)
+  sub_treatment_types       sub_treatment_types[]
+  hospitals                 hospitals             @relation(fields: [hospital_id], references: [hospital_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_treatment_hospital")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  user_id    Int    @id @default(autoincrement())
+  user_type  String
+  first_name String
+  last_name  String
+  email      String @unique
+  password   String
+}
